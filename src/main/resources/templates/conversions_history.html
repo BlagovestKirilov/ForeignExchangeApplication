@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Currency conversions</title>
+</head>
+<body>
+<h2>Foreign Exchange</h2>
+<button onclick="window.location.href='/convert'">Converter</button>
+<button onclick="window.location.href='/'">Exchange Rates</button>
+<h2>Find Transactions by Date</h2>
+<form action="/conversions" method="post">
+    <label for="date">Date:</label>
+    <input type="date" id="date" name="date">
+
+    <label for="transactionIdentifier">Transaction Identifier:</label>
+    <input type="text" id="transactionIdentifier" name="transactionIdentifier" style="width: 300px;">
+
+    <button type="submit">Find</button>
+</form>
+
+<th:block th:if="${currencyConversions != null and currencyConversions.size() > 0}">
+    <h2>Currency Conversions</h2>
+    <table border="1">
+        <thead>
+        <tr>
+            <th>Transaction Identifier</th>
+            <th>Source Currency</th>
+            <th>Source Currency Amount</th>
+            <th>Target Currency</th>
+            <th>Target Currency Amount</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="currencyConversion : ${currencyConversions}">
+            <td th:text="${currencyConversion.transactionIdentifier}"></td>
+            <td th:text="${currencyConversion.sourceCurrencyCode}"></td>
+            <td th:text="${currencyConversion.amountSourceCurrency}"></td>
+            <td th:text="${currencyConversion.targetCurrencyCode}"></td>
+            <td th:text="${currencyConversion.amountTargetCurrency}"></td>
+        </tr>
+        </tbody>
+    </table>
+</th:block>
+<th:block th:if="${currencyConversions != null and currencyConversions.size() == 0}">
+    <h2>No Transactions Found</h2>
+</th:block>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Currency Converter</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+<h2>Foreign Exchange</h2>
+<button onclick="window.location.href='/'">Exchange Rates</button>
+<button onclick="window.location.href='/conversions'">Currency Conversion History</button>
+<h2>Converter</h2>
+<form id="converterForm">
+    <label for="sourceCurrencyCode">From:</label>
+    <select id="sourceCurrencyCode" name="sourceCurrencyCode">
+        <option th:each="currency : ${currencies}" th:value="${currency}" th:text="${currency}"></option>
+    </select>
+
+    <label for="targetCurrencyCode">To:</label>
+    <select id="targetCurrencyCode" name="targetCurrencyCode">
+        <option th:each="currency : ${currencies}" th:value="${currency}" th:text="${currency}"></option>
+    </select>
+
+    <label for="amountSourceCurrency">Amount:</label>
+    <input type="text" id="amountSourceCurrency" name="amountSourceCurrency">
+
+    <button type="button" onclick="convertCurrency()">Convert</button>
+</form>
+<div id="conversionResult"></div>
+
+<script>
+    function convertCurrency() {
+        var amountSourceCurrency = $('#amountSourceCurrency').val();
+        if (isNaN(amountSourceCurrency) || amountSourceCurrency.trim() === "") {
+            $('#conversionResult').html('<p>Please enter a valid number for the amount!</p>');
+            return; // Exit the function early if the amount is not valid
+        }
+        var sourceCurrencyCode = $('#sourceCurrencyCode').val();
+        var targetCurrencyCode = $('#targetCurrencyCode').val();
+
+        if (sourceCurrencyCode === targetCurrencyCode) {
+            $('#conversionResult').html('<p>Please select different source and target currencies!</p>');
+            return;
+        }
+        var formData = {
+            sourceCurrencyCode: sourceCurrencyCode,
+            targetCurrencyCode: targetCurrencyCode,
+            amountSourceCurrency: amountSourceCurrency
+        };
+
+        $.ajax({
+            type: "POST",
+            contentType: "application/json",
+            url: "/convert",
+            data: JSON.stringify(formData),
+            dataType: 'text',
+            success: function (result) {
+                $('#conversionResult').html('<p>' + result + '</p>');
+            },
+            error: function (xhr, status, error) {
+                var errorMessage = xhr.responseText // Get the error message from the response
+                console.log("Error message:", errorMessage); // Debugging
+                errorMessage = errorMessage.replace(/\n/g, "<br>");
+                $('#conversionResult').html('<p>Error: ' + errorMessage + '</p>'); // Display the error message
+            }
+        });
+    }
+</script>
+</body>
+</html>

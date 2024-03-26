@@ -11,8 +11,10 @@ import java.util.List;
 public interface CurrencyConversionRepository extends JpaRepository<CurrencyConversion, Long> {
     @Query("SELECT t FROM CurrencyConversion t WHERE YEAR(t.transactionDate) = YEAR(:transactionDate) AND MONTH(t.transactionDate) = MONTH(:transactionDate) AND DAY(t.transactionDate) = DAY(:transactionDate)")
     List<CurrencyConversion> findByCurrencyConversionDate(@Param("transactionDate") Date transactionDate);
+
     @Query("SELECT t FROM CurrencyConversion t WHERE t.transactionIdentifier = :transactionIdentifier")
     List<CurrencyConversion> findByTransactionIdentifier(@Param("transactionIdentifier") String transactionIdentifier);
+
     @Query("SELECT t FROM CurrencyConversion t WHERE t.transactionIdentifier = :transactionIdentifier AND YEAR(t.transactionDate) = YEAR(:transactionDate) AND MONTH(t.transactionDate) = MONTH(:transactionDate) AND DAY(t.transactionDate) = DAY(:transactionDate)")
     List<CurrencyConversion> findByCurrencyConversionIdAndCurrencyConversionDate(@Param("transactionIdentifier") String transactionIdentifier, @Param("transactionDate") Date transactionDate);
 }

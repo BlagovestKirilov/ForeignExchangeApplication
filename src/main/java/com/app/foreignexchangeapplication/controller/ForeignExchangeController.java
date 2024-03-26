@@ -25,9 +25,19 @@ public class ForeignExchangeController {
     public String show() {
         return "redirect:/exchange";
     }
+
     @GetMapping("/exchange")
-    public String exchange(Model model) {
-        model.addAttribute("currencies", foreignExchangeService.getAvailableCurrencies());
+    public Object exchange(Model model) {
+        String[] currencies = new String[0];
+        try {
+            currencies = foreignExchangeService.getAvailableCurrencies();
+        } catch (ExternalServiceException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("An error occurred during currency exchange!\nCode: " + e.getCode() + "!\nMessage: " + e.getMessage() + "!");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("An error occurred during currency exchange!\nMessage: " + e.getMessage() + "!");
+        } finally {
+            model.addAttribute("currencies", currencies);
+        }
         return "exchange_rates";
     }
 
@@ -36,12 +46,12 @@ public class ForeignExchangeController {
     public ResponseEntity<String> exchangeCurrency(@RequestBody CurrencyConversionDto transactionDto) {
         try {
             CurrencyConversionDto currencyConversionDto = foreignExchangeService.exchange(transactionDto);
-            String result = String.format(RETURN_TEMPLATE,currencyConversionDto.getAmountSourceCurrency(),currencyConversionDto.getSourceCurrencyCode(),currencyConversionDto.getAmountTargetCurrency(),currencyConversionDto.getTargetCurrencyCode());
+            String result = String.format(RETURN_TEMPLATE, currencyConversionDto.getAmountSourceCurrency(), currencyConversionDto.getSourceCurrencyCode(), currencyConversionDto.getAmountTargetCurrency(), currencyConversionDto.getTargetCurrencyCode());
             return ResponseEntity.ok(result);
         } catch (ExternalServiceException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("An error occurred during currency exchange!\nCode: " +e.getCode() +"!\nMessage: "+ e.getMessage()+"!");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("An error occurred during currency exchange!\nCode: " + e.getCode() + "!\nMessage: " + e.getMessage() + "!");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("An error occurred during currency exchange!\nMessage: "+ e.getMessage()+"!");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("An error occurred during currency exchange!\nMessage: " + e.getMessage() + "!");
         }
     }
 
@@ -50,17 +60,27 @@ public class ForeignExchangeController {
     public ResponseEntity<String> convertCurrency(@RequestBody CurrencyConversionDto transactionDto) {
         try {
             CurrencyConversionDto currencyConversionDto = foreignExchangeService.convert(transactionDto);
-            String result = String.format(RETURN_TEMPLATE,currencyConversionDto.getAmountSourceCurrency(),currencyConversionDto.getSourceCurrencyCode(),currencyConversionDto.getAmountTargetCurrency(),currencyConversionDto.getTargetCurrencyCode());
+            String result = String.format(RETURN_TEMPLATE, currencyConversionDto.getAmountSourceCurrency(), currencyConversionDto.getSourceCurrencyCode(), currencyConversionDto.getAmountTargetCurrency(), currencyConversionDto.getTargetCurrencyCode());
             return ResponseEntity.ok(result);
         } catch (ExternalServiceException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("An error occurred during currency exchange!\nCode: " +e.getCode() +"!\nMessage: "+ e.getMessage()+"!");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("An error occurred during currency exchange!\nCode: " + e.getCode() + "!\nMessage: " + e.getMessage() + "!");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("An error occurred during currency exchange!\nMessage: "+ e.getMessage()+"!");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("An error occurred during currency exchange!\nMessage: " + e.getMessage() + "!");
         }
     }
+
     @GetMapping("/convert")
-    public String showExchangeRates(Model model) {
-        model.addAttribute("currencies", foreignExchangeService.getAvailableCurrencies());
+    public Object convert(Model model) {
+        String[] currencies = new String[0];
+        try {
+            currencies = foreignExchangeService.getAvailableCurrencies();
+        } catch (ExternalServiceException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("An error occurred during currency exchange!\nCode: " + e.getCode() + "!\nMessage: " + e.getMessage() + "!");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("An error occurred during currency exchange!\nMessage: " + e.getMessage() + "!");
+        } finally {
+            model.addAttribute("currencies", currencies);
+        }
         return "converter";
     }
 

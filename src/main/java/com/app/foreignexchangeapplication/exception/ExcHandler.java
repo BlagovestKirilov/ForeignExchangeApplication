@@ -8,12 +8,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class ExcHandler {
     @ExceptionHandler
-    public ResponseEntity<ErrorResponse> handleException(ExternalServiceException exc){
+    public ResponseEntity<ErrorResponse> handleException(ExternalServiceException exc) {
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
                 exc.getMessage(),
-                System.currentTimeMillis())
-                ;
+                System.currentTimeMillis());
 
         return new ResponseEntity<ErrorResponse>(errorResponse, HttpStatus.BAD_REQUEST);
     }

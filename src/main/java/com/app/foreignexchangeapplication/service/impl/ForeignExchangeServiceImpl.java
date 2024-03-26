@@ -43,28 +43,29 @@ public class ForeignExchangeServiceImpl implements ForeignExchangeService {
         }
         currencyConversionDto.setAmountTargetCurrency(convertedAmount);
         return currencyConversionDto;
-     }
+    }
 
     @Override
     public CurrencyConversionDto convert(CurrencyConversionDto currencyConversionDto) throws IOException {
-        BigDecimal convertedAmount = BigDecimal.valueOf(currencyLayerService.makeConvertRequest(currencyConversionDto.getSourceCurrencyCode(), currencyConversionDto.getAmountSourceCurrency(),currencyConversionDto.getTargetCurrencyCode()));
+        BigDecimal convertedAmount = BigDecimal.valueOf(currencyLayerService.makeConvertRequest(currencyConversionDto.getSourceCurrencyCode(), currencyConversionDto.getAmountSourceCurrency(), currencyConversionDto.getTargetCurrencyCode()));
         currencyConversionDto.setAmountTargetCurrency(convertedAmount);
-        CurrencyConversion transaction = new CurrencyConversion(currencyRepository.findFirstByCurrencyCode(currencyConversionDto.getSourceCurrencyCode()),currencyConversionDto.getAmountSourceCurrency(),currencyRepository.findFirstByCurrencyCode(currencyConversionDto.getTargetCurrencyCode()),convertedAmount);
+        CurrencyConversion transaction = new CurrencyConversion(currencyRepository.findFirstByCurrencyCode(currencyConversionDto.getSourceCurrencyCode()), currencyConversionDto.getAmountSourceCurrency(), currencyRepository.findFirstByCurrencyCode(currencyConversionDto.getTargetCurrencyCode()), convertedAmount);
         currencyConversionRepository.save(transaction);
         return currencyConversionDto;
     }
+
     @Override
-    public List<CurrencyConversionDto> findTransactions(String transactionIdentifier, Date transactionDate){
+    public List<CurrencyConversionDto> findTransactions(String transactionIdentifier, Date transactionDate) {
         List<CurrencyConversion> currencyConversions = new ArrayList<>();
-        if(Objects.nonNull(transactionIdentifier) && !transactionIdentifier.isEmpty() && Objects.nonNull(transactionDate)){
+        if (Objects.nonNull(transactionIdentifier) && !transactionIdentifier.isEmpty() && Objects.nonNull(transactionDate)) {
             currencyConversions = currencyConversionRepository.findByCurrencyConversionIdAndCurrencyConversionDate(transactionIdentifier.trim(), transactionDate);
-        } else if (Objects.nonNull(transactionIdentifier) &&  !transactionIdentifier.isEmpty() ) {
+        } else if (Objects.nonNull(transactionIdentifier) && !transactionIdentifier.isEmpty()) {
             currencyConversions = currencyConversionRepository.findByTransactionIdentifier(transactionIdentifier.trim());
         } else if (Objects.nonNull(transactionDate)) {
             currencyConversions = currencyConversionRepository.findByCurrencyConversionDate(transactionDate);
         }
         List<CurrencyConversionDto> currencyConversionDtos = new ArrayList<>();
-        for(CurrencyConversion currencyConversion : currencyConversions){
+        for (CurrencyConversion currencyConversion : currencyConversions) {
             CurrencyConversionDto dto = new CurrencyConversionDto();
             dto.setTransactionIdentifier(currencyConversion.getTransactionIdentifier());
             dto.setSourceCurrencyCode(currencyConversion.getSourceCurrency().getCurrencyCode());
@@ -75,9 +76,10 @@ public class ForeignExchangeServiceImpl implements ForeignExchangeService {
         }
         return currencyConversionDtos;
     }
+
     @Override
-    public String[] getAvailableCurrencies(){
-        if(currencyMap.isEmpty()) {
+    public String[] getAvailableCurrencies() {
+        if (currencyMap.isEmpty()) {
             List<CurrencyDto> availableCurrenciesDtos = currencyLayerService.getAllAvailableCurrencies();
             for (CurrencyDto currency : availableCurrenciesDtos) {
                 currencyMap.put(currency.getCurrencyCode(), currency.getCurrencyName());
@@ -87,7 +89,7 @@ public class ForeignExchangeServiceImpl implements ForeignExchangeService {
                     .map(CurrencyDto::getCurrencyCode)
                     .sorted()
                     .toArray(String[]::new);
-        }else {
+        } else {
             return currencyMap.keySet().stream()
                     .sorted()
                     .toArray(String[]::new);

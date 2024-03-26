@@ -1,9 +1,9 @@
 package com.app.foreignexchangeapplication.exception;
 
 public class ErrorResponse {
-        private int status;
-        private String message;
-        private Long timestamp;
+    private int status;
+    private String message;
+    private Long timestamp;
 
     public ErrorResponse(int status, String message, Long timestamp) {
         this.status = status;

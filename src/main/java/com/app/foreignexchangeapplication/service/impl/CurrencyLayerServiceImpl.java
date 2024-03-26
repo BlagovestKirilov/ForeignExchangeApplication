@@ -29,20 +29,21 @@ public class CurrencyLayerServiceImpl implements CurrencyLayerService {
 
     private static final String CURRENT_CURRENCIES = "list";
     static CloseableHttpClient httpClient = HttpClients.createDefault();
+
     @Override
-    public Double makeConvertRequest(String sourceCurrencyCode, BigDecimal amountSourceCurrencyCode, String targetCurrencyCode ) throws IOException {
-        HttpGet get = new HttpGet(BASE_URL + CONVERT_ENDPOINT + "?access_key=" + ACCESS_KEY + "&from=" + sourceCurrencyCode +"&to="+targetCurrencyCode+"&amount="+amountSourceCurrencyCode+"&format=1");
+    public Double makeConvertRequest(String sourceCurrencyCode, BigDecimal amountSourceCurrencyCode, String targetCurrencyCode) throws IOException {
+        HttpGet get = new HttpGet(BASE_URL + CONVERT_ENDPOINT + "?access_key=" + ACCESS_KEY + "&from=" + sourceCurrencyCode + "&to=" + targetCurrencyCode + "&amount=" + amountSourceCurrencyCode + "&format=1");
         try {
-            CloseableHttpResponse response =  httpClient.execute(get);
+            CloseableHttpResponse response = httpClient.execute(get);
             HttpEntity entity = response.getEntity();
             double result;
 
             JSONObject exchangeRates = new JSONObject(EntityUtils.toString(entity));
             boolean isSuccess = exchangeRates.getBoolean("success");
-            if (isSuccess){
+            if (isSuccess) {
                 result = exchangeRates.getDouble("result");
-            }else{
-                JSONObject errorObject =  exchangeRates.getJSONObject("error");
+            } else {
+                JSONObject errorObject = exchangeRates.getJSONObject("error");
                 String error = errorObject.getString("info");
                 String code = String.valueOf(errorObject.getInt("code"));
                 throw new ExternalServiceException(code, error);
@@ -55,17 +56,18 @@ public class CurrencyLayerServiceImpl implements CurrencyLayerService {
             throw new JSONException(e.getMessage());
         }
     }
+
     @Override
-    public List<CurrencyDto> getAllAvailableCurrencies(){
+    public List<CurrencyDto> getAllAvailableCurrencies() {
         HttpGet get = new HttpGet(BASE_URL + CURRENT_CURRENCIES + "?access_key=" + ACCESS_KEY);
         try {
-            CloseableHttpResponse response =  httpClient.execute(get);
+            CloseableHttpResponse response = httpClient.execute(get);
             HttpEntity entity = response.getEntity();
-            List<CurrencyDto> currencyDtoList = null;
+            List<CurrencyDto> currencyDtoList;
 
-           JSONObject exchangeRates = new JSONObject(EntityUtils.toString(entity));
+            JSONObject exchangeRates = new JSONObject(EntityUtils.toString(entity));
             boolean isSuccess = exchangeRates.getBoolean("success");
-            if (isSuccess){
+            if (isSuccess) {
                 JSONObject currencies = exchangeRates.getJSONObject("currencies");
                 currencyDtoList = new ArrayList<>();
 
@@ -78,6 +80,11 @@ public class CurrencyLayerServiceImpl implements CurrencyLayerService {
 
                     currencyDtoList.add(currencyDto);
                 }
+            } else {
+                JSONObject errorObject = exchangeRates.getJSONObject("error");
+                String error = errorObject.getString("info");
+                String code = String.valueOf(errorObject.getInt("code"));
+                throw new ExternalServiceException(code, error);
             }
             response.close();
             return currencyDtoList;

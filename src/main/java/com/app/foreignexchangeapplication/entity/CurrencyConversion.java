@@ -30,7 +30,7 @@ public class CurrencyConversion {
     public CurrencyConversion(Currency sourceCurrency, BigDecimal amountSourceCurrency, Currency targetCurrency, BigDecimal amountTargetCurrency) {
         this.sourceCurrency = sourceCurrency;
         this.amountSourceCurrency = amountSourceCurrency;
-        this.targetCurrency= targetCurrency;
+        this.targetCurrency = targetCurrency;
         this.amountTargetCurrency = amountTargetCurrency;
         this.transactionDate = new Date();
         this.transactionIdentifier = UUID.randomUUID().toString();

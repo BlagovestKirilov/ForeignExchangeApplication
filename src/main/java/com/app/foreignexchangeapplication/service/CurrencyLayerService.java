@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public interface CurrencyLayerService {
-    Double makeConvertRequest(String sourceCurrencyCode, BigDecimal amountSourceCurrencyCode, String targetCurrencyCode ) throws IOException;
+    Double makeConvertRequest(String sourceCurrencyCode, BigDecimal amountSourceCurrencyCode, String targetCurrencyCode) throws IOException;
+
     List<CurrencyDto> getAllAvailableCurrencies();
 }
